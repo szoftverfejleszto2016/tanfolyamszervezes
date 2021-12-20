@@ -1,6 +1,9 @@
 # Tanfolyamszervezés
+
 ## Vizsgaremek
+
 ### 2022. május
+
 Iskolánk esti és hétvégi informatikai képzéseket szervez, amelyek tantermi és online csoportokban, különböző időpontokban indulnak.
 
 A feladat olyan webhely és mobil alkalmazás elkészítése, amelyen a látogatók tájékozódhatnak a képzésekről és az induló csoportokról, és online jelentkezhetnek is ezekre.  Egy csoporba legfeljebb 8 tanuló jelentkezhet. A jelentkezést egy e-mailben vissza kell igazolni.
