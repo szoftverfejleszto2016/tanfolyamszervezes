@@ -17,7 +17,7 @@ const pool = mysql.createPool({
 
 app.get("/public/csoportok", function (req, res) {
     // const q = "SELECT * FROM csoportok WHERE indulas >= date(now())";
-    const q = "SELECT csoportok.csid,kid,indulas,beosztas,COUNT(jid) AS létszám " 
+    const q = "SELECT csoportok.csid,kid,indulas,beosztas,COUNT(jid) AS letszam " 
             + "FROM csoportok LEFT JOIN jelentkezok ON csoportok.csid = jelentkezok.csid "
             + "WHERE indulas >= date(now()) GROUP BY csid";
     pool.query(q, function (error, results) {
