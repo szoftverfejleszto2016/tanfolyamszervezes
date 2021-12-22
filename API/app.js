@@ -16,14 +16,17 @@ const pool = mysql.createPool({
 });
 
 app.get("/public/csoportok", function (req, res) {
-    const q = "SELECT * FROM csoportok WHERE indulas >= date(now())";
+    // const q = "SELECT * FROM csoportok WHERE indulas >= date(now())";
+    const q = "SELECT csoportok.csid,kid,indulas,beosztas,COUNT(jid) AS létszám " 
+            + "FROM csoportok LEFT JOIN jelentkezok ON csoportok.csid = jelentkezok.csid "
+            + "WHERE indulas >= date(now()) GROUP BY csid";
     pool.query(q, function (error, results) {
-            if (!error) {
-                res.send(results);
-            } else {
-                res.send(error);
-            }
-        });
+        if (!error) {
+            res.send(results);
+        } else {
+            res.send(error);
+        }
+    });
 });
 
 app.listen(5000, function () {
