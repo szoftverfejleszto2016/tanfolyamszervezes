@@ -17,8 +17,7 @@ const pool = mysql.createPool({
 
 app.get("/public/csoportok", function (req, res) {
     const q = "SELECT * FROM csoportok WHERE indulas >= date(now())";
-    pool.query(q, [req.params.elem],
-        function (error, results) {
+    pool.query(q, function (error, results) {
             if (!error) {
                 res.send(results);
             } else {
