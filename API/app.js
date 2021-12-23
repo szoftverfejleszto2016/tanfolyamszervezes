@@ -29,6 +29,28 @@ app.get("/public/csoportok", function (req, res) {
     });
 });
 
+app.post("/public/csoportok", function (req, res) {
+    const q = "INSERT INTO jelentkezok (csid, jnev, szulnev, szulido, szulhely, anyjaneve, telefon, email) VALUES (?,?,?,?,?,?,?,?)";
+    pool.query(q, 
+        [req.body.csid, 
+         req.body.jnev,
+         req.body.szulnev,
+         req.body.szulido,
+         req.body.szulhely,
+         req.body.anyjaneve,
+         req.body.telefon,
+         req.body.email
+        ],
+        function (error, results) {
+            if (!error) {
+                res.send(results);
+            } else {
+                res.send(error);
+            }
+        });
+});
+
+
 app.listen(5000, function () {
     console.log("Server elindítva az 5000-es porton...");
 });
