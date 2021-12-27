@@ -30,8 +30,9 @@ app.get("/public/csoportok", function (req, res) {
     });
 });
 
-app.post("/public/csoportok", function (req, res) {
-    const q = "INSERT INTO jelentkezok (csid, jnev, szulnev, szulido, szulhely, anyjaneve, telefon, email) VALUES (?,?,?,?,?,?,?,?)";
+app.post("/public/jelentkezok", function (req, res) {
+    const q = "INSERT INTO jelentkezok (csid, jnev, szulnev, szulido, szulhely, anyjaneve, cim, telefon, email) " 
+            + "VALUES (?,?,?,?,?,?,?,?,?)";
     pool.query(q, 
         [req.body.csid, 
          req.body.jnev,
@@ -39,6 +40,7 @@ app.post("/public/csoportok", function (req, res) {
          req.body.szulido,
          req.body.szulhely,
          req.body.anyjaneve,
+         req.body.cim,
          req.body.telefon,
          req.body.email
         ],
