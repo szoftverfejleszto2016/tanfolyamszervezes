@@ -2,9 +2,9 @@ const express = require("express");
 const app = express();
 app.use(express.json());
 require('dotenv').config();
-const mysql = require('mysql');
 const cors = require("cors");
 app.use(cors());
+const mysql = require('mysql');
 
 const pool = mysql.createPool({
     host: process.env.HOST,
