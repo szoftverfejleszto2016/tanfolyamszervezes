@@ -1,4 +1,3 @@
-require('dotenv').config()
 const express = require("express");
 const app = express();
 app.use(express.json());
@@ -18,7 +17,9 @@ const pool = mysql.createPool({
     dateStrings: true
 });
 
-// publikus API
+// *** publikus API *** //
+
+// visszaadja az ezután induló csoportok adatait
 app.get("/public/csoportok", function (req, res) {
     const q = "SELECT csoportok.csid,kepzesek.knev,indulas,beosztas,ar,"
         + "COUNT(jid) AS letszam "
@@ -34,6 +35,7 @@ app.get("/public/csoportok", function (req, res) {
     });
 });
 
+// létrehoz egy új jelentkezőt a küldött adatokkal
 app.post("/public/jelentkezok", function (req, res) {
     const q = "INSERT INTO jelentkezok (csid, jnev, szulnev, szulido, "
         + "szulhely, anyjaneve, cim, telefon, email) "
@@ -47,8 +49,7 @@ app.post("/public/jelentkezok", function (req, res) {
         req.body.anyjaneve,
         req.body.cim,
         req.body.telefon,
-        req.body.email
-        ],
+        req.body.email],
         function (error, results) {
             if (!error) {
                 res.send(results);
@@ -58,20 +59,151 @@ app.post("/public/jelentkezok", function (req, res) {
         });
 });
 
-// admin API
+// *** admin API *** //
+
+// admin bejelentkezés
 app.post("/admin", function (req, res) {
     const hash = process.env.ADMIN;
     if (!bcrypt.compareSync(req.body.password, hash))
         return res.status(401).send({ message: "Hibás jelszó!" })
-    const token = jwt.sign({
-        password: req.body.password}, 
+    const token = jwt.sign(
+        { password: req.body.password }, 
         process.env.TOKEN_SECRET, 
         { expiresIn: 3600 })
     res.json({ token: token, message: "Sikeres bejelentkezés." })
 });
 
-app.post("/admin/csoportok", function (req, res) {
+// token ellenőrzése (middleware)
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
+    if (!token)
+        return res.status(401).send({ message: "Azonosítás szükséges!" })
+    jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
+        if (err)
+            return res.status(403).send({ message: "Nincs jogosultsága!" })
+        req.user = user
+        next()
+    })
+}
 
+// az összes csoport adatainak lekérése
+app.get("/admin/csoportok", authenticateToken, function (req, res) {
+    const q = "SELECT csoportok.csid,kepzesek.knev,indulas,beosztas,ar,"
+        + "COUNT(jid) AS letszam "
+        + "FROM kepzesek JOIN csoportok ON csoportok.kid=kepzesek.kid "
+        + "LEFT JOIN jelentkezok ON csoportok.csid = jelentkezok.csid "
+        + "GROUP BY csid ORDER BY indulas DESC";
+    pool.query(q, function (error, results) {
+        if (!error) {
+            res.send(results);
+        } else {
+            res.send(error);
+        }
+    });
+});
+
+// új csoport hozzáadása
+app.post("/admin/csoportok", authenticateToken, function (req, res) {
+    const q = "INSERT INTO csoportok (kid, indulas, beosztas, helyszin, ar) "
+            + "VALUES(?,?,?,?,?)"
+    pool.query(q, 
+        [req.body.kid,
+        req.body.indulas,
+        req.body.beosztas,
+        req.body.helyszin,
+        req.body.ar],
+        function (error, results) {
+        if (!error) {
+            res.send(results);
+        } else {
+            res.send(error);
+        }
+    });
+})
+
+// egy csoport jelentkezőinek listája
+app.get("/admin/csoportok/:id", authenticateToken, function (req, res) {
+    const q = "SELECT jid, jnev, szulnev, szulido, szulhely, anyjaneve, " 
+            + "cim, telefon, email FROM jelentkezok WHERE csid=?";
+    pool.query(q, [req.params.id], function (error, results) {
+        if (!error) {
+            res.send(results);
+        } else {
+            res.send(error);
+        }
+    });
+});
+
+// csoport módosítása
+app.put("/admin/csoportok/:id", authenticateToken, function (req, res) {
+    const q = "UPDATE csoportok "
+            + "SET kid=?, indulas=?, beosztas=?, helyszin=?, ar=? "
+            + "WHERE csid=?"
+    pool.query(q, 
+        [req.body.kid,
+        req.body.indulas,
+        req.body.beosztas,
+        req.body.helyszin,
+        req.body.ar,
+        req.params.id],
+        function (error, results) {
+        if (!error) {
+            res.send(results);
+        } else {
+            res.send(error);
+        }
+    });
+})
+
+// csoport törlése
+app.delete("/admin/csoportok/:id", authenticateToken, function (req, res) {
+    const q = "DELETE FROM csoportok WHERE csid=?";
+    pool.query(q, [req.params.id], function (error, results) {
+        if (!error) {
+            res.send(results);
+        } else {
+            res.send(error);
+        }
+    });
+});
+
+// módosítja egy jelentkező adatait
+app.put("/admin/jelentkezok/:id", function (req, res) {
+    const q = "UPDATE jelentkezok "
+            + "SET csid=?, jnev=?, szulnev=?, szulido=?, "
+            + "szulhely=?, anyjaneve=?, cim=?, telefon=?, email=? "
+            + "WHERE jid=?";
+    pool.query(q,
+        [req.body.csid,
+        req.body.jnev,
+        req.body.szulnev,
+        req.body.szulido,
+        req.body.szulhely,
+        req.body.anyjaneve,
+        req.body.cim,
+        req.body.telefon,
+        req.body.email,
+        req.params.id],
+        function (error, results) {
+            if (!error) {
+                res.send(results);
+            } else {
+                res.send(error);
+            }
+        });
+});
+
+// jelentkező törlése
+app.delete("/admin/jelentkezok/:id", authenticateToken, function (req, res) {
+    const q = "DELETE FROM jelentkezok WHERE jid=?";
+    pool.query(q, [req.params.id], function (error, results) {
+        if (!error) {
+            res.send(results);
+        } else {
+            res.send(error);
+        }
+    });
 });
 
 app.listen(5000, function () {
