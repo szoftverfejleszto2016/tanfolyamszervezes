@@ -12,16 +12,18 @@ function csoportok() {
     })
         .then((response) => response.json())
         .then(json => {
-            tabla.innerHTML = "<tr><th>Azonosító</th><th>Képzés</th><th>Indulás</th>"
-                + "<th>Beosztás</th><th>Ár (Ft)</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th></tr>";
+            tabla.innerHTML = "<tr><th>Azon</th><th>Képzés</th><th>Indulás</th><th>Beosztás</th>"
+                + "<th>Ár (Ft)</th><th>Fő</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th></tr>";
             json.forEach(cs => {
                 tabla.innerHTML += "<tr><td>" + cs.csid + "</td><td>" + cs.knev + "</td>"
                     + "</td><td>" + cs.indulas + "</td><td>" + cs.beosztas + "</td><td>"
-                    + cs.ar.toLocaleString() + "</td>"
-                    + '<td><button class="button btn-sm btn-primary" onclick="jelentkezok(' + cs.csid + ')">Jelentkezők</button></td>'
-                    + '<td><button class="button btn-sm btn-primary" onclick="modosit(' + cs.csid + ')">Módosítás</button></td>'
-                    + '<td><button class="button btn-sm btn-outline-danger" onclick="torol(' + cs.csid + ')">Törlés</button></td>'
-                    + "</td></tr>"
+                    + cs.ar.toLocaleString() + "</td><td>" + cs.letszam + "</td>"
+                    + '<td><button class="button btn-sm btn-primary" '
+                    + 'onclick="jelentkezok(' + cs.csid + ')">Jelentkezők</button></td>'
+                    + '<td><button class="button btn-sm btn-primary" '
+                    + 'onclick="modosit(' + cs.csid + ')">Módosítás</button></td>'
+                    + '<td><button class="button btn-sm btn-outline-danger" '
+                    + 'onclick="torol(' + cs.csid + ')">Törlés</button></td></tr>'
             });
         })
         .catch(err => console.log(err));

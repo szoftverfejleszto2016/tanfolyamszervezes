@@ -17,15 +17,17 @@ function jelentkezok() {
         .then((response) => response.json())
         .then(json => {
             tabla.innerHTML = "<tr><th>Név</th><th>Születési név</th><th>Idő</th>"
-                + "<th>Hely</th><th>Anyja neve</th><th>Cím</th><th>Telefon</th><th>email</th>"
-                + "<th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th></tr>";
+                + "<th>Hely</th><th>Anyja neve</th><th>Cím</th><th>Telefon</th>"
+                + "<th>email</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th></tr>";
             json.forEach(j => {
                 tabla.innerHTML += "<tr><td>" + j.jnev + "</td><td>" + j.szulnev + "</td>"
                     + "<td>" + j.szulido + "</td><td>" + j.szulhely + "</td>"
                     + "<td>" + j.anyjaneve + "</td><td>" + j.cim + "</td>"
                     + "<td>" + j.telefon + "</td><td>" + j.email + "</td>"
-                    + '<td><button class="button btn-sm btn-primary" onclick="modosit(' + j.jid + ')">Módosítás</button></td>'
-                    + '<td><button class="button btn-sm btn-outline-danger" onclick="torol(' + j.jid + ')">Törlés</button></td>'
+                    + '<td><button class="button btn-sm btn-primary" onclick="modosit(' 
+                    + j.jid + ')">Módosítás</button></td>'
+                    + '<td><button class="button btn-sm btn-outline-danger" onclick="torol(' 
+                    + j.jid + ')">Törlés</button></td>'
                     + "</td></tr>"
             })
             letszam = json.length

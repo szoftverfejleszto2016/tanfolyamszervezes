@@ -124,7 +124,8 @@ app.post("/admin/csoportok", authenticateToken, function (req, res) {
 
 // egy csoport beolvasása
 app.get("/admin/csoportok/:csid", authenticateToken, function (req, res) {
-    const q = "SELECT kid, indulas, beosztas, helyszin, ar FROM csoportok WHERE csid=?";
+    const q = "SELECT kid, indulas, beosztas, helyszin, ar "
+            + "FROM csoportok WHERE csid=?";
     pool.query(q, [req.params.csid], function (error, results) {
         if (!error) {
             res.send(results);
