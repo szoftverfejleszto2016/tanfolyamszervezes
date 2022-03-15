@@ -131,7 +131,7 @@
                                     <label for="tandij" class="form-check-label">Vállalom a tandíj befizetését.</label>
                                 </div>
                                 <p id="uzenet" class="text-danger mt-3"></p>
-                                <input type="submit" id="gomb" class="button btn-primary btn-lg my-3" value="Jelentkezem">
+                                <button type="button" id="gomb" class="button btn-primary btn-lg my-3">Jelentkezem</button>
                             </div>
                         </div>
                     </div>
@@ -158,6 +158,11 @@
             </div>
         </div>
     </footer>
+    <form class="container my-3" id="bejelentkezes" action="localhost:5000/admin" method="post">
+        <label>Adminisztrátor jelszó: <input type="password" name="password" id="password"></label>
+        <button type="button" id="login">Bejelentkezés</button>
+        <p id="uzenet2" class="text-danger">&nbsp;</p>
+    </form>
     <script src="bootstrap.bundle.min.js"></script>
     <script src="index.js"></script>
 </body>

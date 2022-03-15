@@ -122,11 +122,10 @@ app.post("/admin/csoportok", authenticateToken, function (req, res) {
     });
 })
 
-// egy csoport jelentkezőinek listája
-app.get("/admin/csoportok/:id", authenticateToken, function (req, res) {
-    const q = "SELECT jid, jnev, szulnev, szulido, szulhely, anyjaneve, " 
-            + "cim, telefon, email FROM jelentkezok WHERE csid=?";
-    pool.query(q, [req.params.id], function (error, results) {
+// egy csoport beolvasása
+app.get("/admin/csoportok/:csid", authenticateToken, function (req, res) {
+    const q = "SELECT kid, indulas, beosztas, helyszin, ar FROM csoportok WHERE csid=?";
+    pool.query(q, [req.params.csid], function (error, results) {
         if (!error) {
             res.send(results);
         } else {
@@ -136,7 +135,7 @@ app.get("/admin/csoportok/:id", authenticateToken, function (req, res) {
 });
 
 // csoport módosítása
-app.put("/admin/csoportok/:id", authenticateToken, function (req, res) {
+app.put("/admin/csoportok/:csid", authenticateToken, function (req, res) {
     const q = "UPDATE csoportok "
             + "SET kid=?, indulas=?, beosztas=?, helyszin=?, ar=? "
             + "WHERE csid=?"
@@ -146,7 +145,7 @@ app.put("/admin/csoportok/:id", authenticateToken, function (req, res) {
         req.body.beosztas,
         req.body.helyszin,
         req.body.ar,
-        req.params.id],
+        req.params.csid],
         function (error, results) {
         if (!error) {
             res.send(results);
@@ -157,9 +156,34 @@ app.put("/admin/csoportok/:id", authenticateToken, function (req, res) {
 })
 
 // csoport törlése
-app.delete("/admin/csoportok/:id", authenticateToken, function (req, res) {
+app.delete("/admin/csoportok/:csid", authenticateToken, function (req, res) {
     const q = "DELETE FROM csoportok WHERE csid=?";
-    pool.query(q, [req.params.id], function (error, results) {
+    pool.query(q, [req.params.csid], function (error, results) {
+        if (!error) {
+            res.send(results);
+        } else {
+            res.send(error);
+        }
+    });
+});
+
+// egy csoport jelentkezőinek listája
+app.get("/admin/lista/:csid", authenticateToken, function (req, res) {
+    const q = "SELECT jid, jnev, szulnev, szulido, szulhely, anyjaneve, " 
+            + "cim, telefon, email FROM jelentkezok WHERE csid=? ORDER BY jnev";
+    pool.query(q, [req.params.csid], function (error, results) {
+        if (!error) {
+            res.send(results);
+        } else {
+            res.send(error);
+        }
+    });
+});
+
+// egy jelentkező adatai
+app.get("/admin/jelentkezok/:jid", authenticateToken, function (req, res) {
+    const q = "SELECT * FROM jelentkezok WHERE jid=?";
+    pool.query(q, [req.params.jid], function (error, results) {
         if (!error) {
             res.send(results);
         } else {
@@ -169,7 +193,7 @@ app.delete("/admin/csoportok/:id", authenticateToken, function (req, res) {
 });
 
 // módosítja egy jelentkező adatait
-app.put("/admin/jelentkezok/:id", function (req, res) {
+app.put("/admin/jelentkezok/:jid", function (req, res) {
     const q = "UPDATE jelentkezok "
             + "SET csid=?, jnev=?, szulnev=?, szulido=?, "
             + "szulhely=?, anyjaneve=?, cim=?, telefon=?, email=? "
@@ -184,7 +208,7 @@ app.put("/admin/jelentkezok/:id", function (req, res) {
         req.body.cim,
         req.body.telefon,
         req.body.email,
-        req.params.id],
+        req.params.jid],
         function (error, results) {
             if (!error) {
                 res.send(results);
