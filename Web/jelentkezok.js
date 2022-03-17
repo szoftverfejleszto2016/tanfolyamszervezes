@@ -24,9 +24,9 @@ function jelentkezok() {
                     + "<td>" + j.szulido + "</td><td>" + j.szulhely + "</td>"
                     + "<td>" + j.anyjaneve + "</td><td>" + j.cim + "</td>"
                     + "<td>" + j.telefon + "</td><td>" + j.email + "</td>"
-                    + '<td><button class="button btn-sm btn-primary" onclick="modosit(' 
+                    + '<td><button class="button btn-sm btn-primary" onclick="modosit('
                     + j.jid + ')">Módosítás</button></td>'
-                    + '<td><button class="button btn-sm btn-outline-danger" onclick="torol(' 
+                    + '<td><button class="button btn-sm btn-outline-danger" onclick="torol('
                     + j.jid + ')">Törlés</button></td>'
                     + "</td></tr>"
             })
@@ -37,6 +37,7 @@ function jelentkezok() {
 }
 
 document.getElementById("hozzaad").onclick = function (e) {
+    e.preventDefault()
     let valasz = ellenoriz();
     document.getElementById("uzenet").innerHTML = valasz;
     if (valasz) return;
@@ -61,7 +62,7 @@ document.getElementById("hozzaad").onclick = function (e) {
         .then(resp => {
             document.getElementById("uzenet").innerHTML = "Felvéve.";
         })
-        .then(jelentkezok())
+        .then(resp => jelentkezok())
         .catch(err => console.log(err));
 }
 
